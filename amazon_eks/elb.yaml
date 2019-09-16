@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spin-gate-public
+  namespace: spinnaker
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: spin-gate-public
+      protocol: TCP
+      port: 8084
+      targetPort: 8084
+  selector:
+    app: spin
+    cluster: spin-gate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spin-deck-public
+  namespace: spinnaker
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: spin-deck-public
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: spin
+    cluster: spin-deck
