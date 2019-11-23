@@ -1,0 +1,14 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/php-redis:$TAG_NAME', '.' ]
+  dir: 'php-redis'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/php-redis']
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/redis-slave:$TAG_NAME', '.' ]
+  dir: 'redis-slave'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/redis-slave']
+images:
+- 'gcr.io/$PROJECT_ID/php-redis'
+- 'gcr.io/$PROJECT_ID/redis-slave'
