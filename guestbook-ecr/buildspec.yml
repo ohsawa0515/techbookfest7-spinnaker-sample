@@ -19,8 +19,8 @@ phases:
       - cd $CODEBUILD_SRC_DIR/php-redis && docker build -t $REPOSITORY_URI_REDIS:latest .
       - cd $CODEBUILD_SRC_DIR/php-redis && docker tag $REPOSITORY_URI_REDIS:latest $REPOSITORY_URI_REDIS:$IMAGE_TAG
       - echo "Building the Docker image redis-slave"
-      - cd $CODEBUILD_SRC_DIR/php-redis && docker build -t $REPOSITORY_URI_SLAVE:latest .
-      - cd $CODEBUILD_SRC_DIR/php-redis && docker tag $REPOSITORY_URI_SLAVE:latest $REPOSITORY_URI_SLAVE:$IMAGE_TAG
+      - cd $CODEBUILD_SRC_DIR/redis-slave && docker build -t $REPOSITORY_URI_SLAVE:latest .
+      - cd $CODEBUILD_SRC_DIR/redis-slave && docker tag $REPOSITORY_URI_SLAVE:latest $REPOSITORY_URI_SLAVE:$IMAGE_TAG
   post_build:
     commands:
       - echo "Pushing the Docker image..."
