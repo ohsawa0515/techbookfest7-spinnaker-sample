@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+      - REPOSITORY_URI_REDIS=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/php-redis
+      - REPOSITORY_URI_SLAVE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/redis-slave
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - echo "Building the Docker image php-redis"
+      - cd $CODEBUILD_SRC_DIR/php-redis && docker build -t $REPOSITORY_URI_REDIS:latest .
+      - cd $CODEBUILD_SRC_DIR/php-redis && docker tag $REPOSITORY_URI_REDIS:latest $REPOSITORY_URI_REDIS:$IMAGE_TAG
+      - echo "Building the Docker image redis-slave"
+      - cd $CODEBUILD_SRC_DIR/php-redis && docker build -t $REPOSITORY_URI_SLAVE:latest .
+      - cd $CODEBUILD_SRC_DIR/php-redis && docker tag $REPOSITORY_URI_SLAVE:latest $REPOSITORY_URI_SLAVE:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo "Pushing the Docker image..."
+      - docker push $REPOSITORY_URI_REDIS:latest
+      - docker push $REPOSITORY_URI_REDIS:$IMAGE_TAG
+      - docker push $REPOSITORY_URI_SLAVE:latest
+      - docker push $REPOSITORY_URI_SLAVE:$IMAGE_TAG
